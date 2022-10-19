@@ -6,6 +6,7 @@ import (
 	"homework/internal/commander"
 	"homework/internal/storage"
 	"log"
+	"strconv"
 	"strings"
 )
 
@@ -31,7 +32,9 @@ func listFunc(s string) string {
 func helpFunc(s string) string {
 	return "/help - list commands\n" +
 		"/list - list data\n" +
-		"/add <id> - add new id with form"
+		"/add <id> - add new id with form\n" +
+		"/delete <id> - delete id with form\n" +
+		"/update <id> <new id> - updated"
 }
 
 func addFunc(data string) string {
@@ -48,7 +51,7 @@ func addFunc(data string) string {
 	if err != nil {
 		return err.Error()
 	}
-	return fmt.Sprintf("user %v added", u)
+	return fmt.Sprintf("form %v added", u)
 }
 func deleteFunc(data string) string {
 	log.Printf("upp command param: <data>")
@@ -56,31 +59,39 @@ func deleteFunc(data string) string {
 	if len(params) != 1 {
 		return errors.Wrapf(BadArgument, "%d items: <%v>", len(params), params).Error()
 	}
-	u, err := storage.NewForm(params[0])
+	u, err := strconv.Atoi(params[0])
 	if err != nil {
 		return err.Error()
 	}
-	err = storage.Delete(uint(0))
+	err = storage.Delete(uint(u))
 	if err != nil {
 		return err.Error()
 	}
-	return fmt.Sprintf("user %v added", u)
+	return fmt.Sprintf("form %v deleted", u)
 }
+
 func updateFunc(data string) string {
-	log.Printf("upp command param: <data>")
+	log.Printf("add command param: <data>")
 	params := strings.Split(data, " ")
-	if len(params) != 1 {
+	fmt.Println("params", params)
+	if len(params) != 2 {
 		return errors.Wrapf(BadArgument, "%d items: <%v>", len(params), params).Error()
 	}
-	u, err := storage.NewForm(params[0])
+	id, err := strconv.Atoi(params[0])
 	if err != nil {
 		return err.Error()
 	}
-	err = storage.Update(u)
+	form, err := storage.Get(uint(id))
 	if err != nil {
 		return err.Error()
 	}
-	return fmt.Sprintf("user %v added", u)
+	err = form.SetName(params[1])
+	if err != nil {
+		return err.Error()
+	}
+	err = storage.Update(form)
+	fmt.Println("update", form)
+	return fmt.Sprintf("form %v updated", form)
 }
 
 func AddHandlers(c *commander.Commander) {

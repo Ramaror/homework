@@ -19,11 +19,11 @@ func NewForm(idForm string) (*Form, error) {
 	return &u, nil
 }
 
-func (f *Form) SetName(idForm string) error {
-	if len(idForm) == 0 || len(idForm) > 10 {
-		return fmt.Errorf("bad name <%v>", idForm)
+func (f *Form) SetName(name string) error {
+	if len(name) == 0 || len(name) > 10 {
+		return fmt.Errorf("bad name <%v>", name)
 	}
-	f.name = idForm
+	f.name = name
 	return nil
 }
 

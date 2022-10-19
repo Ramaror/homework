@@ -34,6 +34,13 @@ func Add(f *Form) error {
 	data[f.GetId()] = f
 	return nil
 }
+func Get(id uint) (*Form, error) {
+	if form, ok := data[id]; ok {
+		return form, nil
+	}
+
+	return nil, errors.Wrap(UserNotExists, strconv.FormatUint(uint64(id), 10))
+}
 
 func Update(f *Form) error {
 	if _, ok := data[f.GetId()]; !ok {
